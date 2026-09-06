@@ -34,6 +34,19 @@ class Settings(BaseSettings):
     # Часовой пояс офиса — нужен, чтобы LLM корректно понимала "завтра в 14:00".
     office_timezone: str = "Asia/Almaty"
 
+    # --- Telegram-бот ---
+    telegram_bot_token: str = Field("", alias="TELEGRAM_BOT_TOKEN")
+    # Срок жизни одноразового кода привязки (второй способ линковки).
+    telegram_link_code_ttl_minutes: int = 15
+
+    # --- STT (распознавание речи из голосовых) ---
+    # Провайдер-агностик: любой OpenAI-совместимый /audio/transcriptions.
+    # По умолчанию Groq Whisper (бесплатный тариф, хорош с русским).
+    stt_base_url: str = "https://api.groq.com/openai/v1"
+    stt_api_key: str = Field("", alias="STT_API_KEY")
+    stt_model: str = "whisper-large-v3"
+    stt_timeout_seconds: float = 60.0
+
 
 @lru_cache
 def get_settings() -> Settings:

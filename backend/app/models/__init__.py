@@ -1,6 +1,7 @@
 """Реэкспорт моделей, чтобы Alembic видел их все через один импорт."""
 from app.models.booking import Booking
 from app.models.room import Room
+from app.models.transfer import BookingTransfer
 from app.models.user import User
 
-__all__ = ["Booking", "Room", "User"]
+__all__ = ["Booking", "Room", "User", "BookingTransfer"]

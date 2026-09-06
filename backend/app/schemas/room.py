@@ -7,6 +7,15 @@ class RoomCreate(BaseModel):
     description: str | None = None
 
 
+class RoomUpdate(BaseModel):
+    """Частичное обновление: все поля опциональны (PATCH-семантика)."""
+
+    name: str | None = Field(default=None, min_length=1, max_length=120)
+    capacity: int | None = Field(default=None, ge=0)
+    description: str | None = None
+    is_active: bool | None = None
+
+
 class RoomRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

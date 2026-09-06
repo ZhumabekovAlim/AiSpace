@@ -17,12 +17,17 @@ class UserLogin(BaseModel):
 
 
 class UserRead(BaseModel):
-    """Ответ наружу: без hashed_password."""
+    """Ответ наружу: без hashed_password.
+
+    email — обычная строка (не EmailStr): формат проверяем на ВХОДЕ (UserCreate),
+    а ответ не должен падать на уже сохранённых данных, напр. на служебных
+    доменах вроде .local, которые email-validator считает зарезервированными.
+    """
 
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    email: EmailStr
+    email: str
     full_name: str
     role: UserRole
     is_active: bool

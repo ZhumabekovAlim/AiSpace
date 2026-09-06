@@ -1,23 +1,28 @@
 """Безопасность: хэширование паролей и работа с JWT."""
 from datetime import datetime, timedelta, timezone
 
+import bcrypt
 import jwt
-from passlib.context import CryptContext
 
 from app.core.config import get_settings
 
 settings = get_settings()
 
-# bcrypt — стандарт для хранения паролей (соль внутри, медленный по замыслу).
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# bcrypt напрямую (без passlib — он не поддерживается и конфликтует с bcrypt 4.x).
+# Ограничение алгоритма — 72 байта; лишнее отсекаем, как это делают все реализации.
+_BCRYPT_MAX_BYTES = 72
+
+
+def _prepare(plain: str) -> bytes:
+    return plain.encode("utf-8")[:_BCRYPT_MAX_BYTES]
 
 
 def hash_password(plain: str) -> str:
-    return pwd_context.hash(plain)
+    return bcrypt.hashpw(_prepare(plain), bcrypt.gensalt()).decode("utf-8")
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
+    return bcrypt.checkpw(_prepare(plain), hashed.encode("utf-8"))
 
 
 def create_access_token(subject: str) -> str:

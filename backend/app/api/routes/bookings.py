@@ -27,6 +27,8 @@ async def create_booking(
             title=payload.title,
             start_time=payload.start_time,
             end_time=payload.end_time,
+            comment=payload.comment,
+            amenities=payload.amenities,
         )
     except booking_service.RoomNotFound as exc:
         raise HTTPException(status.HTTP_404_NOT_FOUND, str(exc)) from exc

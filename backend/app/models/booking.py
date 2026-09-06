@@ -5,8 +5,10 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     String,
+    Text,
     func,
 )
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -39,6 +41,11 @@ class Booking(Base):
         ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
     title: Mapped[str] = mapped_column(String(255))
+    comment: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # id допов из фиксированного каталога (app.core.amenities).
+    amenities: Mapped[list[str]] = mapped_column(
+        ARRAY(String), nullable=False, default=list, server_default="{}"
+    )
 
     # Храним оба конца интервала как timestamptz (в UTC).
     start_time: Mapped[datetime] = mapped_column(DateTime(timezone=True))

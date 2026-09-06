@@ -29,6 +29,8 @@ async def create_booking(
     title: str,
     start_time: datetime,
     end_time: datetime,
+    comment: str | None = None,
+    amenities: list[str] | None = None,
 ) -> Booking:
     room = await db.get(Room, room_id)
     if room is None or not room.is_active:
@@ -40,6 +42,8 @@ async def create_booking(
         title=title,
         start_time=start_time,
         end_time=end_time,
+        comment=comment,
+        amenities=amenities or [],
     )
     db.add(booking)
     try:

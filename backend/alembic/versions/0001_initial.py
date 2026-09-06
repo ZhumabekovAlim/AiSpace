@@ -20,7 +20,11 @@ def upgrade() -> None:
     # Нужно для EXCLUDE-ограничения с равенством по room_id внутри gist-индекса.
     op.execute("CREATE EXTENSION IF NOT EXISTS btree_gist")
 
-    user_role = postgresql.ENUM("user", "admin", name="user_role")
+    # create_type=False — тип создаём явно ниже, чтобы create_table НЕ пытался
+    # выпустить CREATE TYPE повторно (иначе DuplicateObjectError на чистой БД).
+    user_role = postgresql.ENUM(
+        "user", "admin", name="user_role", create_type=False
+    )
     user_role.create(op.get_bind(), checkfirst=True)
 
     op.create_table(

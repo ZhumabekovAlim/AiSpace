@@ -1,0 +1,9 @@
+# Нормализация переносов строк. Файлы, исполняемые в Linux-контейнерах,
+# ДОЛЖНЫ храниться с LF, иначе shebang/скрипты ломаются.
+* text=auto eol=lf
+
+*.sh    text eol=lf
+Dockerfile text eol=lf
+*.png binary
+*.jpg binary
+*.ico binary

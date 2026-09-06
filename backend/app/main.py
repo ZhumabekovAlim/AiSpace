@@ -26,9 +26,18 @@ async def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-from app.api.routes import auth, bookings, nl, rooms  # noqa: E402
+from app.api.routes import (  # noqa: E402
+    amenities,
+    auth,
+    bookings,
+    nl,
+    rooms,
+    users,
+)
 
 app.include_router(auth.router)
+app.include_router(users.router)
 app.include_router(rooms.router)
 app.include_router(bookings.router)
+app.include_router(amenities.router)
 app.include_router(nl.router)

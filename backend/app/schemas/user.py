@@ -32,3 +32,16 @@ class UserRead(BaseModel):
     role: UserRole
     is_active: bool
     created_at: datetime
+
+
+class UserAdminRead(UserRead):
+    """Расширенная карточка для админки: с числом броней пользователя."""
+
+    bookings_count: int = 0
+
+
+class UserAdminUpdate(BaseModel):
+    """Что админ может менять у пользователя."""
+
+    role: UserRole | None = None
+    is_active: bool | None = None

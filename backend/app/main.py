@@ -33,6 +33,7 @@ from app.api.routes import (  # noqa: E402
     bookings,
     nl,
     rooms,
+    transfers,
     users,
 )
 
@@ -42,4 +43,5 @@ app.include_router(rooms.router)
 app.include_router(bookings.router)
 app.include_router(amenities.router)
 app.include_router(analytics.router)
+app.include_router(transfers.router)
 app.include_router(nl.router)

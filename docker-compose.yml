@@ -23,6 +23,20 @@ services:
       # Порт хоста настраивается через .env (BACKEND_PORT), если 8000 занят.
       - "${BACKEND_PORT:-8000}:8000"
 
+  bot:
+    build: ./backend
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    # Тот же образ, но вместо API запускаем polling-бота.
+    entrypoint: ["python", "-m", "app.bot"]
+    # on-failure: без токена бот завершается штатно (exit 0) и не рестартует;
+    # при реальном падении с токеном — перезапустится.
+    restart: on-failure
+
   frontend:
     build:
       context: ./frontend

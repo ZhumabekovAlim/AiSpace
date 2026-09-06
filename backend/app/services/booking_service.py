@@ -4,6 +4,7 @@ from datetime import datetime
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from app.models.booking import Booking
 from app.models.room import Room
@@ -81,6 +82,33 @@ async def list_bookings(
     stmt = stmt.order_by(Booking.start_time)
     result = await db.scalars(stmt)
     return list(result)
+
+
+async def list_bookings_admin(
+    db: AsyncSession,
+    *,
+    room_id: int | None = None,
+    user_id: int | None = None,
+    date_from: datetime | None = None,
+    date_to: datetime | None = None,
+) -> list[Booking]:
+    """История броней для админки: все брони с автором и комнатой (eager load).
+
+    Порядок — от новых к старым по времени начала (удобно для журнала).
+    """
+    stmt = select(Booking).options(
+        joinedload(Booking.room), joinedload(Booking.user)
+    )
+    if room_id is not None:
+        stmt = stmt.where(Booking.room_id == room_id)
+    if user_id is not None:
+        stmt = stmt.where(Booking.user_id == user_id)
+    if date_from is not None:
+        stmt = stmt.where(Booking.start_time >= date_from)
+    if date_to is not None:
+        stmt = stmt.where(Booking.start_time < date_to)
+    stmt = stmt.order_by(Booking.start_time.desc())
+    return list(await db.scalars(stmt))
 
 
 async def cancel_booking(

@@ -56,3 +56,30 @@ class AmenityRead(BaseModel):
     id: str
     label: str
     icon: str
+
+
+class UserBrief(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    full_name: str
+    email: str
+
+
+class BookingAdminRead(BaseModel):
+    """Полная карточка брони для админки: со всеми характеристиками,
+    именем комнаты и данными автора брони.
+    """
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    title: str
+    comment: str | None
+    amenities: list[str]
+    start_time: datetime
+    end_time: datetime
+    created_at: datetime
+    room_id: int
+    room_name: str
+    user: UserBrief

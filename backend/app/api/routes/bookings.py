@@ -4,10 +4,10 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, require_admin
 from app.core.database import get_db
 from app.models.user import User, UserRole
-from app.schemas.booking import BookingCreate, BookingRead
+from app.schemas.booking import BookingAdminRead, BookingCreate, BookingRead
 from app.services import booking_service
 
 router = APIRouter(prefix="/bookings", tags=["bookings"])
@@ -49,6 +49,36 @@ async def list_bookings(
         db, room_id=room_id, date_from=date_from, date_to=date_to
     )
     return [BookingRead.model_validate(b) for b in bookings]
+
+
+@router.get("/all", response_model=list[BookingAdminRead])
+async def list_all_bookings(
+    room_id: int | None = Query(default=None),
+    user_id: int | None = Query(default=None),
+    date_from: datetime | None = Query(default=None),
+    date_to: datetime | None = Query(default=None),
+    _: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+) -> list[BookingAdminRead]:
+    """История всех броней для админки (с автором и комнатой), фильтры по дате/комнате."""
+    bookings = await booking_service.list_bookings_admin(
+        db, room_id=room_id, user_id=user_id, date_from=date_from, date_to=date_to
+    )
+    return [
+        BookingAdminRead(
+            id=b.id,
+            title=b.title,
+            comment=b.comment,
+            amenities=b.amenities,
+            start_time=b.start_time,
+            end_time=b.end_time,
+            created_at=b.created_at,
+            room_id=b.room_id,
+            room_name=b.room.name,
+            user=b.user,
+        )
+        for b in bookings
+    ]
 
 
 @router.get("/my", response_model=list[BookingRead])

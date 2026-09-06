@@ -514,6 +514,146 @@ button.link.muted {
   color: var(--chip-text);
 }
 
+/* ---------- History (admin bookings) ---------- */
+.filters {
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.filters label {
+  min-width: 150px;
+}
+.date-group {
+  margin-bottom: 18px;
+}
+.date-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 0 4px 8px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.admin-table.history td {
+  vertical-align: top;
+}
+.nowrap {
+  white-space: nowrap;
+}
+
+/* ---------- Analytics ---------- */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.stat-tile {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--primary-dark);
+  letter-spacing: -0.02em;
+}
+.stat-label {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 2px;
+}
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.day-chart {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  height: 160px;
+}
+.day-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.day-bar-wrap {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.day-bar {
+  width: 70%;
+  min-height: 3px;
+  background: var(--chip);
+  border-radius: 5px 5px 0 0;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.day-bar.today {
+  background: var(--primary);
+}
+.day-bar-num {
+  position: absolute;
+  top: -18px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.day-tick {
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.bar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bar-row {
+  display: grid;
+  grid-template-columns: 130px 1fr 32px;
+  align-items: center;
+  gap: 10px;
+}
+.bar-label {
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bar-track {
+  background: var(--bg);
+  border-radius: 6px;
+  height: 12px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+  border-radius: 6px;
+  min-width: 3px;
+}
+.bar-count {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-size: 13px;
+}
+
 @media (max-width: 720px) {
   .booking-form {
     grid-template-columns: 1fr;

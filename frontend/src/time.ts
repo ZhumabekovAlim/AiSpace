@@ -42,6 +42,22 @@ export function fmtDateTime(iso: string): string {
   });
 }
 
+// Ключ локального дня "YYYY-MM-DD" для группировки.
+export function dayKey(iso: string): string {
+  const d = new Date(iso);
+  const off = d.getTimezoneOffset() * 60000;
+  return new Date(d.getTime() - off).toISOString().slice(0, 10);
+}
+
+// "12 сентября, пятница" — заголовок группы истории.
+export function fmtDayLong(iso: string): string {
+  return new Date(iso).toLocaleDateString("ru-RU", {
+    day: "numeric",
+    month: "long",
+    weekday: "long",
+  });
+}
+
 // "12 сент, 14:00–15:30" — дата один раз, оба конца времени.
 export function fmtDateRange(startIso: string, endIso: string): string {
   const date = new Date(startIso).toLocaleDateString("ru-RU", {

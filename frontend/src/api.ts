@@ -50,6 +50,39 @@ export interface Booking {
   created_at: string;
 }
 
+export interface AdminBooking {
+  id: number;
+  title: string;
+  comment: string | null;
+  amenities: string[];
+  start_time: string;
+  end_time: string;
+  created_at: string;
+  room_id: number;
+  room_name: string;
+  user: { id: number; full_name: string; email: string };
+}
+
+export interface NameCount {
+  label: string;
+  count: number;
+}
+export interface DayCount {
+  date: string;
+  count: number;
+}
+export interface Analytics {
+  total_bookings: number;
+  upcoming_bookings: number;
+  active_rooms: number;
+  total_users: number;
+  total_hours: number;
+  per_room: NameCount[];
+  per_day: DayCount[];
+  top_users: NameCount[];
+  amenities: NameCount[];
+}
+
 export interface BookingDraft {
   room_id: number | null;
   room_name: string | null;
@@ -147,6 +180,20 @@ export const api = {
   },
 
   myBookings: () => request<Booking[]>("/bookings/my"),
+
+  adminBookings: (params: {
+    room_id?: number;
+    date_from?: string;
+    date_to?: string;
+  }) => {
+    const q = new URLSearchParams();
+    if (params.room_id != null) q.set("room_id", String(params.room_id));
+    if (params.date_from) q.set("date_from", params.date_from);
+    if (params.date_to) q.set("date_to", params.date_to);
+    return request<AdminBooking[]>(`/bookings/all?${q.toString()}`);
+  },
+
+  analytics: () => request<Analytics>("/analytics"),
 
   createBooking: (b: {
     room_id: number;

@@ -7,6 +7,8 @@ import { BookPage } from "./pages/BookPage";
 import { MyBookingsPage } from "./pages/MyBookingsPage";
 import { AdminRoomsPage } from "./pages/admin/AdminRoomsPage";
 import { AdminUsersPage } from "./pages/admin/AdminUsersPage";
+import { AdminBookingsPage } from "./pages/admin/AdminBookingsPage";
+import { AnalyticsPage } from "./pages/admin/AnalyticsPage";
 
 export function App() {
   const { user, loading } = useApp();
@@ -35,6 +37,8 @@ export function App() {
           <>
             <Route path="/admin/rooms" element={<AdminRoomsPage />} />
             <Route path="/admin/users" element={<AdminUsersPage />} />
+            <Route path="/admin/bookings" element={<AdminBookingsPage />} />
+            <Route path="/admin/analytics" element={<AnalyticsPage />} />
           </>
         ) : null}
         <Route path="*" element={<Navigate to="/" replace />} />

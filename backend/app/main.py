@@ -28,6 +28,7 @@ async def health() -> dict[str, str]:
 
 from app.api.routes import (  # noqa: E402
     amenities,
+    analytics,
     auth,
     bookings,
     nl,
@@ -40,4 +41,5 @@ app.include_router(users.router)
 app.include_router(rooms.router)
 app.include_router(bookings.router)
 app.include_router(amenities.router)
+app.include_router(analytics.router)
 app.include_router(nl.router)

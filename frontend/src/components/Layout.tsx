@@ -23,6 +23,9 @@ export function Layout() {
             <NavLink to="/my" className={navClass}>
               Мои брони
             </NavLink>
+            <NavLink to="/transfers" className={navClass}>
+              Передачи
+            </NavLink>
             {isAdmin && (
               <>
                 <span className="nav-sep" />
@@ -43,7 +46,9 @@ export function Layout() {
           </nav>
         </div>
         <span className="userbox">
-          {user?.full_name}
+          <NavLink to="/profile" className="nav-link">
+            {user?.full_name}
+          </NavLink>
           {isAdmin && <span className="badge">admin</span>}
           <button className="link" onClick={logout}>
             выйти

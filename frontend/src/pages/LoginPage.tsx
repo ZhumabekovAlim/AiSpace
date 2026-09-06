@@ -9,6 +9,7 @@ export function LoginPage() {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -18,7 +19,8 @@ export function LoginPage() {
     setError(null);
     setBusy(true);
     try {
-      if (mode === "register") await register(email, fullName, password);
+      if (mode === "register")
+        await register(email, fullName, password, phone || undefined);
       else await login(email, password);
       navigate("/", { replace: true });
     } catch (err) {
@@ -45,14 +47,25 @@ export function LoginPage() {
             />
           </label>
           {mode === "register" && (
-            <label>
-              Имя
-              <input
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required
-              />
-            </label>
+            <>
+              <label>
+                Имя
+                <input
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required
+                />
+              </label>
+              <label>
+                Телефон <span className="muted">(для входа через Telegram)</span>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+7 700 123 45 67"
+                />
+              </label>
+            </>
           )}
           <label>
             Пароль

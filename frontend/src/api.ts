@@ -15,9 +15,35 @@ export interface User {
   id: number;
   email: string;
   full_name: string;
+  phone: string | null;
   role: Role;
   is_active: boolean;
   created_at: string;
+  telegram_linked?: boolean;
+}
+
+export type TransferStatus = "pending" | "accepted" | "rejected" | "cancelled";
+
+export interface Transfer {
+  id: number;
+  status: TransferStatus;
+  created_at: string;
+  resolved_at: string | null;
+  room_name: string;
+  booking: {
+    id: number;
+    title: string;
+    room_id: number;
+    start_time: string;
+    end_time: string;
+  };
+  from_user: { id: number; full_name: string; email: string };
+  to_user: { id: number; full_name: string; email: string };
+  new_title: string | null;
+  new_comment: string | null;
+  new_amenities: string[] | null;
+  new_start_time: string | null;
+  new_end_time: string | null;
 }
 
 export interface AdminUser extends User {
@@ -132,8 +158,36 @@ function jsonBody(data: unknown, method = "POST"): RequestInit {
 }
 
 export const api = {
-  register: (email: string, full_name: string, password: string) =>
-    request<User>("/auth/register", jsonBody({ email, full_name, password })),
+  register: (
+    email: string,
+    full_name: string,
+    password: string,
+    phone?: string,
+  ) =>
+    request<User>(
+      "/auth/register",
+      jsonBody({ email, full_name, password, phone: phone || null }),
+    ),
+
+  updateMe: (patch: { full_name?: string; phone?: string | null }) =>
+    request<User>("/auth/me", jsonBody(patch, "PATCH")),
+
+  telegramCode: () => request<{ code: string }>("/auth/me/telegram-code", { method: "POST" }),
+
+  transfers: () =>
+    request<{ incoming: Transfer[]; outgoing: Transfer[] }>("/transfers"),
+
+  requestTransfer: (payload: {
+    booking_id: number;
+    new_title?: string | null;
+    new_comment?: string | null;
+    new_amenities?: string[] | null;
+    new_start_time?: string | null;
+    new_end_time?: string | null;
+  }) => request<Transfer>("/transfers", jsonBody(payload)),
+
+  resolveTransfer: (id: number, action: "accept" | "reject" | "cancel") =>
+    request<Transfer>(`/transfers/${id}/${action}`, { method: "POST" }),
 
   login: async (email: string, password: string) => {
     const form = new URLSearchParams({ username: email, password });

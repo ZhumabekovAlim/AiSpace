@@ -5,6 +5,8 @@ import { LoginPage } from "./pages/LoginPage";
 import { AvailabilityPage } from "./pages/AvailabilityPage";
 import { BookPage } from "./pages/BookPage";
 import { MyBookingsPage } from "./pages/MyBookingsPage";
+import { TransfersPage } from "./pages/TransfersPage";
+import { ProfilePage } from "./pages/ProfilePage";
 import { AdminRoomsPage } from "./pages/admin/AdminRoomsPage";
 import { AdminUsersPage } from "./pages/admin/AdminUsersPage";
 import { AdminBookingsPage } from "./pages/admin/AdminBookingsPage";
@@ -33,6 +35,8 @@ export function App() {
         <Route path="/" element={<AvailabilityPage />} />
         <Route path="/book" element={<BookPage />} />
         <Route path="/my" element={<MyBookingsPage />} />
+        <Route path="/transfers" element={<TransfersPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
         {isAdmin ? (
           <>
             <Route path="/admin/rooms" element={<AdminRoomsPage />} />

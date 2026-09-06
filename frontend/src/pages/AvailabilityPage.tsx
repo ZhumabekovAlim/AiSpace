@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ApiError, api, type Booking, type Room } from "../api";
 import { useApp } from "../context";
 import { AmenityChips } from "../components/Amenities";
+import { TransferRequestModal } from "../components/TransferRequestModal";
 import { dayBounds, fmtTime, todayStr } from "../time";
 
 export function AvailabilityPage() {
@@ -12,6 +13,8 @@ export function AvailabilityPage() {
   const [day, setDay] = useState(todayStr());
   const [schedule, setSchedule] = useState<Booking[]>([]);
   const [err, setErr] = useState<string | null>(null);
+  const [transferFor, setTransferFor] = useState<Booking | null>(null);
+  const [okMsg, setOkMsg] = useState<string | null>(null);
 
   useEffect(() => {
     api.rooms().then(setRooms).catch(() => {});
@@ -68,6 +71,7 @@ export function AvailabilityPage() {
       </div>
 
       {err && <p className="error">{err}</p>}
+      {okMsg && <p className="ok banner">{okMsg}</p>}
 
       <div className="rooms-grid">
         {rooms.map((room) => {
@@ -101,11 +105,18 @@ export function AvailabilityPage() {
                     </div>
                     {b.comment && <div className="slot-comment">{b.comment}</div>}
                     <AmenityChips ids={b.amenities} />
-                    {(b.user_id === user!.id || user!.role === "admin") && (
-                      <button className="link danger" onClick={() => cancel(b.id)}>
-                        отменить
-                      </button>
-                    )}
+                    <div className="slot-actions">
+                      {(b.user_id === user!.id || user!.role === "admin") && (
+                        <button className="link danger" onClick={() => cancel(b.id)}>
+                          отменить
+                        </button>
+                      )}
+                      {b.user_id !== user!.id && (
+                        <button className="link" onClick={() => setTransferFor(b)}>
+                          запросить
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))
               )}
@@ -113,6 +124,17 @@ export function AvailabilityPage() {
           );
         })}
       </div>
+
+      {transferFor && (
+        <TransferRequestModal
+          booking={transferFor}
+          onClose={() => setTransferFor(null)}
+          onDone={() => {
+            setTransferFor(null);
+            setOkMsg("Запрос отправлен владельцу брони.");
+          }}
+        />
+      )}
     </>
   );
 }

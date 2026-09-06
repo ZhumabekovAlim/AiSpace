@@ -15,7 +15,12 @@ interface AppState {
   amenities: Amenity[];
   amenityMap: Record<string, Amenity>;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, name: string, password: string) => Promise<void>;
+  register: (
+    email: string,
+    name: string,
+    password: string,
+    phone?: string,
+  ) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -56,8 +61,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const register = useCallback(
-    async (email: string, name: string, password: string) => {
-      await api.register(email, name, password);
+    async (email: string, name: string, password: string, phone?: string) => {
+      await api.register(email, name, password, phone);
       await api.login(email, password);
       setUser(await api.me());
     },

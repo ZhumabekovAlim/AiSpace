@@ -63,7 +63,10 @@ async def engine():
     # Чистим данные перед каждым тестом — полная изоляция.
     async with eng.begin() as conn:
         await conn.execute(
-            text("TRUNCATE bookings, rooms, users RESTART IDENTITY CASCADE")
+            text(
+                "TRUNCATE booking_transfers, bookings, rooms, users "
+                "RESTART IDENTITY CASCADE"
+            )
         )
     yield eng
     await eng.dispose()

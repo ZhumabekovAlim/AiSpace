@@ -9,11 +9,20 @@ class UserCreate(BaseModel):
     email: EmailStr
     full_name: str = Field(min_length=1, max_length=255)
     password: str = Field(min_length=6, max_length=128)
+    # Телефон — общий идентификатор для веба и Telegram (привязка по номеру).
+    phone: str | None = Field(default=None, max_length=32)
 
 
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+
+class UserUpdate(BaseModel):
+    """Что пользователь может поменять в своём профиле."""
+
+    full_name: str | None = Field(default=None, min_length=1, max_length=255)
+    phone: str | None = Field(default=None, max_length=32)
 
 
 class UserRead(BaseModel):
@@ -29,9 +38,16 @@ class UserRead(BaseModel):
     id: int
     email: str
     full_name: str
+    phone: str | None = None
     role: UserRole
     is_active: bool
     created_at: datetime
+
+
+class UserProfile(UserRead):
+    """Профиль текущего юзера: плюс флаг привязки Telegram."""
+
+    telegram_linked: bool = False
 
 
 class UserAdminRead(UserRead):

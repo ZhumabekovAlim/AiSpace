@@ -41,3 +41,12 @@ export function fmtDateTime(iso: string): string {
     minute: "2-digit",
   });
 }
+
+// "12 сент, 14:00–15:30" — дата один раз, оба конца времени.
+export function fmtDateRange(startIso: string, endIso: string): string {
+  const date = new Date(startIso).toLocaleDateString("ru-RU", {
+    day: "numeric",
+    month: "short",
+  });
+  return `${date}, ${fmtTime(startIso)}–${fmtTime(endIso)}`;
+}

@@ -20,6 +20,10 @@ export interface User {
   created_at: string;
 }
 
+export interface AdminUser extends User {
+  bookings_count: number;
+}
+
 export interface Room {
   id: number;
   name: string;
@@ -28,11 +32,19 @@ export interface Room {
   is_active: boolean;
 }
 
+export interface Amenity {
+  id: string;
+  label: string;
+  icon: string;
+}
+
 export interface Booking {
   id: number;
   room_id: number;
   user_id: number;
   title: string;
+  comment: string | null;
+  amenities: string[];
   start_time: string;
   end_time: string;
   created_at: string;
@@ -56,10 +68,7 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(
-  path: string,
-  options: RequestInit = {},
-): Promise<T> {
+async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const headers = new Headers(options.headers);
   const token = tokenStore.get();
   if (token) headers.set("Authorization", `Bearer ${token}`);
@@ -67,14 +76,13 @@ async function request<T>(
   const res = await fetch(`${API_URL}${path}`, { ...options, headers });
 
   if (!res.ok) {
-    // FastAPI кладёт текст ошибки в поле detail.
     let detail = res.statusText;
     try {
       const body = await res.json();
       if (typeof body.detail === "string") detail = body.detail;
       else if (Array.isArray(body.detail)) detail = body.detail[0]?.msg ?? detail;
     } catch {
-      /* тело не JSON — оставляем statusText */
+      /* тело не JSON */
     }
     throw new ApiError(res.status, detail);
   }
@@ -82,9 +90,9 @@ async function request<T>(
   return res.json();
 }
 
-function jsonBody(data: unknown): RequestInit {
+function jsonBody(data: unknown, method = "POST"): RequestInit {
   return {
-    method: "POST",
+    method,
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   };
@@ -95,7 +103,6 @@ export const api = {
     request<User>("/auth/register", jsonBody({ email, full_name, password })),
 
   login: async (email: string, password: string) => {
-    // OAuth2PasswordRequestForm ждёт form-urlencoded с полем username.
     const form = new URLSearchParams({ username: email, password });
     const data = await request<{ access_token: string }>("/auth/login", {
       method: "POST",
@@ -107,8 +114,30 @@ export const api = {
 
   me: () => request<User>("/auth/me"),
 
-  rooms: () => request<Room[]>("/rooms"),
+  // --- Комнаты ---
+  rooms: (includeInactive = false) =>
+    request<Room[]>(`/rooms${includeInactive ? "?include_inactive=true" : ""}`),
 
+  createRoom: (r: { name: string; capacity: number; description?: string | null }) =>
+    request<Room>("/rooms", jsonBody(r)),
+
+  updateRoom: (
+    id: number,
+    r: Partial<Pick<Room, "name" | "capacity" | "description" | "is_active">>,
+  ) => request<Room>(`/rooms/${id}`, jsonBody(r, "PATCH")),
+
+  archiveRoom: (id: number) => request<Room>(`/rooms/${id}`, { method: "DELETE" }),
+
+  // --- Допы ---
+  amenities: () => request<Amenity[]>("/amenities"),
+
+  // --- Пользователи (админ) ---
+  users: () => request<AdminUser[]>("/users"),
+
+  updateUser: (id: number, patch: { role?: Role; is_active?: boolean }) =>
+    request<AdminUser>(`/users/${id}`, jsonBody(patch, "PATCH")),
+
+  // --- Брони ---
   bookings: (params: { room_id?: number; date_from?: string; date_to?: string }) => {
     const q = new URLSearchParams();
     if (params.room_id != null) q.set("room_id", String(params.room_id));
@@ -122,6 +151,8 @@ export const api = {
   createBooking: (b: {
     room_id: number;
     title: string;
+    comment?: string | null;
+    amenities?: string[];
     start_time: string;
     end_time: string;
   }) => request<Booking>("/bookings", jsonBody(b)),
@@ -129,6 +160,5 @@ export const api = {
   cancelBooking: (id: number) =>
     request<void>(`/bookings/${id}`, { method: "DELETE" }),
 
-  parseNL: (text: string) =>
-    request<BookingDraft>("/nl/parse", jsonBody({ text })),
+  parseNL: (text: string) => request<BookingDraft>("/nl/parse", jsonBody({ text })),
 };
